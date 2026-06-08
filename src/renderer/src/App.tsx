@@ -14,6 +14,7 @@ import { Categories } from './pages/Categories'
 import { SettingsPage } from './pages/Settings'
 import { Overlay } from './pages/Overlay'
 import { OnboardingWizard } from './components/onboarding/OnboardingWizard'
+import { Omnibar } from './pages/Omnibar'
 
 export default function App(): React.ReactElement {
   useAppInit()
@@ -21,7 +22,12 @@ export default function App(): React.ReactElement {
 
   const { settings } = useSettingsStore()
   const isOverlay = window.location.search.includes('overlay=true')
+  const isOmnibar = window.location.search.includes('omnibar=true')
   const [newTaskPanelOpen, setNewTaskPanelOpen] = useState(false)
+
+  if (isOmnibar) {
+    return <Omnibar />
+  }
 
   if (isOverlay) {
     return <Overlay />

@@ -14,6 +14,9 @@ const api = {
 
   // Overlay
   dismissOverlay: () => ipcRenderer.send('overlay:dismissed'),
+  
+  // Omnibar
+  hideOmnibar: () => ipcRenderer.send('omnibar:hide'),
 
   // Window controls (for custom titlebar)
   minimizeWindow: () => ipcRenderer.send('window:minimize'),

@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, globalShortcut } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { store } from './store'
@@ -12,6 +12,36 @@ import icon from '../../resources/icon.png?asset'
 
 let mainWindow: BrowserWindow | null = null
 let overlayWindow: BrowserWindow | null = null
+let omnibarWindow: BrowserWindow | null = null
+
+function createOmnibarWindow(): void {
+  omnibarWindow = new BrowserWindow({
+    width: 600,
+    height: 80,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    resizable: false,
+    movable: false,
+    titleBarStyle: 'hidden',
+    show: false,
+    skipTaskbar: true,
+    webPreferences: {
+      preload: join(__dirname, '../preload/index.js'),
+      sandbox: false
+    }
+  })
+
+  omnibarWindow.on('blur', () => {
+    omnibarWindow?.hide()
+  })
+
+  const omnibarUrl = is.dev && process.env['ELECTRON_RENDERER_URL']
+    ? `${process.env['ELECTRON_RENDERER_URL']}?omnibar=true`
+    : `file://${join(__dirname, '../renderer/index.html')}?omnibar=true`
+
+  omnibarWindow.loadURL(omnibarUrl)
+}
 
 function createOverlayWindow(): void {
   overlayWindow = new BrowserWindow({
@@ -92,6 +122,7 @@ app.whenReady().then(() => {
   registerSettingsHandlers()
   
   ipcMain.handle('app:version', () => app.getVersion())
+  ipcMain.on('omnibar:hide', () => omnibarWindow?.hide())
 
   // Initialize
   const isFirstLaunch = (store as any).get('initialized') !== true
@@ -102,10 +133,23 @@ app.whenReady().then(() => {
 
   // Create windows
   createMainWindow()
+  createOmnibarWindow()
+  
   if (mainWindow) {
     createTray(mainWindow)
     registerOverlayHandlers(overlayWindow, mainWindow)
   }
+
+  globalShortcut.register('CommandOrControl+Shift+Space', () => {
+    if (omnibarWindow) {
+      if (omnibarWindow.isVisible()) {
+        omnibarWindow.hide()
+      } else {
+        omnibarWindow.center()
+        omnibarWindow.show()
+      }
+    }
+  })
 
   const settings = (store as any).get('settings')
   const isStartupLaunch = process.argv.includes('--started-at-login')
