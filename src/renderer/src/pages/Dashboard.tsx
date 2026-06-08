@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useSettingsStore } from '../store/useSettingsStore'
 import { useTaskStore } from '../store/useTaskStore'
 import { useLiveClock } from '../hooks/useLiveClock'
 import { useTaskFilters } from '../hooks/useTaskFilters'
@@ -14,6 +15,7 @@ export function Dashboard(): React.ReactElement {
   const categories = useTaskStore(s => s.categories)
   const stats = getTaskStats(tasks)
   const { time, date, greeting } = useLiveClock()
+  const { settings } = useSettingsStore()
   
   // Dashboard defaults to showing today + overdue if no filters applied
   // For simplicity, we just use the global filter hook
@@ -39,8 +41,8 @@ export function Dashboard(): React.ReactElement {
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', letterSpacing: '0.1em', marginBottom: 4 }}>
             COMMAND CENTER
           </div>
-          <h1 style={{ fontFamily: 'var(--font-sans)', fontSize: 24, fontWeight: 400, color: 'var(--text-primary)' }}>
-            {greeting}, Commander.
+          <h1 style={{ fontFamily: 'var(--font-mono)', fontSize: 24, fontWeight: 400, color: 'var(--text-primary)' }}>
+            {greeting}, {settings.userName}.
           </h1>
         </div>
         <div style={{ textAlign: 'right' }}>

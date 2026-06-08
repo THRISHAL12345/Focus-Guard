@@ -28,6 +28,9 @@ export interface Settings {
   theme: 'dark' | 'light'
   accentColor: 'red' | 'orange' | 'blue'
   reduceAnimations: boolean
+  hasCompletedOnboarding: boolean
+  userName: string
+  persona: string | null
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -39,10 +42,20 @@ export const DEFAULT_SETTINGS: Settings = {
   notifyOverdue: true,
   theme: 'dark',
   accentColor: 'red',
-  reduceAnimations: false
+  reduceAnimations: false,
+  hasCompletedOnboarding: false,
+  userName: 'Commander',
+  persona: null
 }
 
 export const DEFAULT_CATEGORIES = ['Work', 'Personal', 'Health', 'Finance']
+
+export const PERSONA_CATEGORIES: Record<string, string[]> = {
+  Developer: ['Code Review', 'Bug Fix', 'Feature', 'Meeting'],
+  Student: ['Homework', 'Study', 'Lecture', 'Personal'],
+  Executive: ['Management', 'Strategy', 'Email', 'Finance'],
+  General: ['Work', 'Personal', 'Health', 'Finance']
+}
 
 export const PRIORITY_CONFIG: Record<Priority, { label: string; color: string; order: number }> = {
   critical: { label: 'CRITICAL', color: 'var(--critical)', order: 0 },

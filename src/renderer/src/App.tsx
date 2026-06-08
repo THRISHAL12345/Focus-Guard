@@ -3,6 +3,7 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { AppShell } from './components/layout/AppShell'
 import { TaskPanel } from './components/task/TaskPanel'
 import { useAppInit } from './hooks/useAppInit'
+import { useSettingsStore } from './store/useSettingsStore'
 import { useOverdueCheck } from './hooks/useOverdueCheck'
 
 import { Dashboard } from './pages/Dashboard'
@@ -12,16 +13,22 @@ import { Recurring } from './pages/Recurring'
 import { Categories } from './pages/Categories'
 import { SettingsPage } from './pages/Settings'
 import { Overlay } from './pages/Overlay'
+import { OnboardingWizard } from './components/onboarding/OnboardingWizard'
 
 export default function App(): React.ReactElement {
   useAppInit()
   useOverdueCheck()
 
+  const { settings } = useSettingsStore()
   const isOverlay = window.location.search.includes('overlay=true')
   const [newTaskPanelOpen, setNewTaskPanelOpen] = useState(false)
 
   if (isOverlay) {
     return <Overlay />
+  }
+
+  if (!settings.hasCompletedOnboarding) {
+    return <OnboardingWizard />
   }
 
   return (
