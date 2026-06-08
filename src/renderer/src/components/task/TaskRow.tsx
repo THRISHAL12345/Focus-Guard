@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
-import { MoreVertical, Edit2, Trash2, RotateCw } from 'lucide-react'
+import { MoreVertical, Edit2, Trash2, RotateCw, ChevronDown, ChevronRight } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { MarkdownRenderer } from '../ui/MarkdownRenderer'
 import { Task } from '../../lib/constants'
 import { useTaskStore } from '../../store/useTaskStore'
 import { PriorityBadge } from '../ui/PriorityBadge'
@@ -14,12 +16,14 @@ interface TaskRowProps {
 export function TaskRow({ task, onEdit }: TaskRowProps): React.ReactElement {
   const [hovered, setHovered] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
   const completeTask = useTaskStore(s => s.completeTask)
   const deleteTask = useTaskStore(s => s.deleteTask)
   const setTaskStatus = useTaskStore(s => s.setTaskStatus)
 
   const isDone = task.status === 'done'
   const isInProgress = task.status === 'in-progress'
+  const hasDescription = !!task.description?.trim()
 
   const handleCheckbox = () => {
     if (isDone) {
@@ -30,23 +34,27 @@ export function TaskRow({ task, onEdit }: TaskRowProps): React.ReactElement {
   }
 
   return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '40px 100px 1fr 120px 140px 80px',
-        alignItems: 'center',
-        padding: '0 12px',
-        height: 52,
-        background: hovered ? 'var(--bg-elevated)' : 'var(--bg-surface)',
-        border: '1px solid var(--border-default)',
-        borderRadius: 'var(--radius-md)',
-        transition: 'all var(--transition-fast)',
-        opacity: isDone ? 0.6 : 1,
-        borderLeft: !isDone && hovered ? '3px solid var(--accent)' : '1px solid var(--border-default)'
-      }}
-    >
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '40px 100px 1fr 120px 140px 80px',
+          alignItems: 'center',
+          padding: '0 12px',
+          height: 52,
+          background: hovered ? 'var(--bg-elevated)' : 'var(--bg-surface)',
+          border: '1px solid var(--border-default)',
+          borderTopLeftRadius: 'var(--radius-md)',
+          borderTopRightRadius: 'var(--radius-md)',
+          borderBottomLeftRadius: isExpanded && hasDescription ? 0 : 'var(--radius-md)',
+          borderBottomRightRadius: isExpanded && hasDescription ? 0 : 'var(--radius-md)',
+          transition: 'all var(--transition-fast)',
+          opacity: isDone ? 0.6 : 1,
+          borderLeft: !isDone && hovered ? '3px solid var(--accent)' : '1px solid var(--border-default)'
+        }}
+      >
       {/* Checkbox */}
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <button
@@ -78,15 +86,21 @@ export function TaskRow({ task, onEdit }: TaskRowProps): React.ReactElement {
       </div>
 
       {/* Title */}
-      <div style={{
+      <div 
+        onClick={() => hasDescription && setIsExpanded(!isExpanded)}
+        style={{
         display: 'flex',
         alignItems: 'center',
         gap: 8,
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
-        paddingRight: 16
+        paddingRight: 16,
+        cursor: hasDescription ? 'pointer' : 'default'
       }}>
+        {hasDescription && (
+          isExpanded ? <ChevronDown size={14} color="var(--text-secondary)" /> : <ChevronRight size={14} color="var(--text-secondary)" />
+        )}
         {task.isRecurring && <RotateCw size={12} color="var(--recurring)" />}
         <span style={{
           textDecoration: isDone ? 'line-through' : 'none',
@@ -148,6 +162,30 @@ export function TaskRow({ task, onEdit }: TaskRowProps): React.ReactElement {
           )}
         </div>
       </div>
+      </div>
+      
+      {/* Expanded Description */}
+      <AnimatePresence>
+        {isExpanded && hasDescription && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            style={{ overflow: 'hidden' }}
+          >
+            <div style={{ 
+              padding: '16px 24px', 
+              background: 'var(--bg-void)', 
+              border: '1px solid var(--border-default)', 
+              borderTop: 'none',
+              borderBottomLeftRadius: 'var(--radius-md)',
+              borderBottomRightRadius: 'var(--radius-md)'
+            }}>
+              <MarkdownRenderer content={task.description || ''} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

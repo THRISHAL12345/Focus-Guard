@@ -3,6 +3,7 @@ import { Task, Priority, RecurringInterval } from '../../lib/constants'
 import { useTaskStore } from '../../store/useTaskStore'
 import { getTodayISO } from '../../lib/dateUtils'
 import { Toggle } from '../ui/Toggle'
+import { MarkdownRenderer } from '../ui/MarkdownRenderer'
 
 interface TaskFormProps {
   task?: Task
@@ -23,6 +24,7 @@ export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps): React.Rea
   const [dueTime, setDueTime] = useState(task?.dueTime || '')
   const [isRecurring, setIsRecurring] = useState(task?.isRecurring || false)
   const [recurringInterval, setRecurringInterval] = useState<RecurringInterval>(task?.recurringInterval || 'daily')
+  const [isPreviewMode, setIsPreviewMode] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -94,16 +96,58 @@ export function TaskForm({ task, onSubmit, onCancel }: TaskFormProps): React.Rea
       </div>
 
       <div>
-        <label style={labelStyle}>Description (Optional)</label>
-        <textarea
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-          placeholder="Add details..."
-          rows={3}
-          style={{...inputStyle, resize: 'none'}}
-          onFocus={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
-          onBlur={e => (e.currentTarget.style.borderColor = 'var(--border-default)')}
-        />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+          <label style={{ ...labelStyle, marginBottom: 0 }}>Description</label>
+          <div style={{ display: 'flex', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-sm)', padding: 2 }}>
+            <button
+              type="button"
+              onClick={() => setIsPreviewMode(false)}
+              style={{
+                background: !isPreviewMode ? 'var(--bg-surface)' : 'transparent',
+                color: !isPreviewMode ? 'var(--text-primary)' : 'var(--text-muted)',
+                border: 'none', padding: '4px 8px', fontSize: 11, fontFamily: 'var(--font-mono)', borderRadius: 2, cursor: 'pointer'
+              }}
+            >
+              WRITE
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsPreviewMode(true)}
+              style={{
+                background: isPreviewMode ? 'var(--bg-surface)' : 'transparent',
+                color: isPreviewMode ? 'var(--text-primary)' : 'var(--text-muted)',
+                border: 'none', padding: '4px 8px', fontSize: 11, fontFamily: 'var(--font-mono)', borderRadius: 2, cursor: 'pointer'
+              }}
+            >
+              PREVIEW
+            </button>
+          </div>
+        </div>
+        
+        {!isPreviewMode ? (
+          <textarea
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            placeholder="Add details... (Markdown supported)"
+            rows={5}
+            style={{...inputStyle, resize: 'vertical', minHeight: 100}}
+            onFocus={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
+            onBlur={e => (e.currentTarget.style.borderColor = 'var(--border-default)')}
+          />
+        ) : (
+          <div style={{ 
+            background: 'var(--bg-elevated)', 
+            border: '1px solid var(--border-default)', 
+            borderRadius: 'var(--radius-sm)', 
+            padding: '10px 12px', 
+            minHeight: 100, 
+            marginBottom: 20,
+            overflowY: 'auto',
+            maxHeight: 300
+          }}>
+            {description ? <MarkdownRenderer content={description} /> : <span style={{ color: 'var(--text-muted)', fontSize: 14 }}>Nothing to preview</span>}
+          </div>
+        )}
       </div>
 
       <div style={{ display: 'flex', gap: 24, marginBottom: 20 }}>
