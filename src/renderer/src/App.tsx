@@ -15,6 +15,7 @@ import { SettingsPage } from './pages/Settings'
 import { Overlay } from './pages/Overlay'
 import { OnboardingWizard } from './components/onboarding/OnboardingWizard'
 import { Omnibar } from './pages/Omnibar'
+import { CommandPalette } from './components/ui/CommandPalette'
 
 export default function App(): React.ReactElement {
   useAppInit()
@@ -40,6 +41,7 @@ export default function App(): React.ReactElement {
   return (
     <>
       <MemoryRouter>
+        <CommandPalette onNewTask={() => setNewTaskPanelOpen(true)} />
         <AppShell onNewTask={() => setNewTaskPanelOpen(true)}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
