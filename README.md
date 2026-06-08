@@ -9,9 +9,14 @@
 - **Offline-First Persistence:** 100% local data storage using `electron-store`. No cloud syncing required; your data stays on your machine.
 - **Advanced Task Management:** 
   - Full CRUD operations with categorized priority levels (Critical, High, Medium, Low).
+  - Markdown Support in task descriptions, featuring GitHub Flavored Markdown (GFM) and syntax-highlighted code blocks for developers.
   - Recurring tasks (`daily`, `weekly`, `monthly`) that auto-spawn upon completion.
   - "In Progress" tracking and visual status toggling.
   - Custom Category Management.
+- **Power User Features:**
+  - **Global Quick Capture (Omnibar):** Press `Ctrl+Shift+Space` (or `Cmd+Shift+Space`) anywhere in your OS to instantly open a floating, Spotlight-style task capture bar. Type your task and hit Enter to add it without breaking your flow.
+  - **Command Palette:** Press `Ctrl+K` inside the app to summon a sleek, searchable command palette. Navigate between pages, create tasks, and toggle themes entirely via the keyboard.
+  - **Persona-Based Onboarding:** First-time setup tailors your initial categories and experience based on your role (Developer, Student, Executive, General).
 - **Insights & Analytics:** Features a GitHub-style Heatmap Calendar for tracking completion streaks and Recharts-powered sparklines.
 - **Background Operation:** Runs silently in the system tray, providing daily reminder notifications.
 
@@ -70,35 +75,4 @@ The compiled installer will be available in the `dist/` directory (e.g., `dist/f
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-An Electron application with React and TypeScript
 
-## Recommended IDE Setup
-
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-
-## Project Setup
-
-### Install
-
-```bash
-$ npm install
-```
-
-### Development
-
-```bash
-$ npm run dev
-```
-
-### Build
-
-```bash
-# For windows
-$ npm run build:win
-
-# For macOS
-$ npm run build:mac
-
-# For Linux
-$ npm run build:linux
-```
